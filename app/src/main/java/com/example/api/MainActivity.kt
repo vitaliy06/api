@@ -4,28 +4,28 @@ package com.example.api
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 import org.apache.commons.text.StringEscapeUtils
-import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
 
-@Serializable
+
 data class Test(
-    val id: String,
-    val name: String,
-    val description: String,
-    val price: String,
-    val category: String,
-    val time_result: String,
-    val preparation: String,
-    val bio: String
+    @SerializedName("id") val id: Int,
+    @SerializedName("name") val name: String,
+    @SerializedName("description") val description: String,
+    @SerializedName("price") val price: String,
+    @SerializedName("category") val category: String,
+    @SerializedName("time_result") val timeResult: String,
+    @SerializedName("preparation") val preparation: String,
+    @SerializedName("bio") val bio: String
 )
 
 
@@ -99,19 +99,21 @@ class MainActivity : AppCompatActivity() {
                 val text = StringEscapeUtils.unescapeJava(unicodeEscaped)
                 val chunkSize = 10542 // Максимальная длина сообщения в одном вызове log.d
 
-               val mainObject = JSONObject(text)
-                /*val item = Test(
-                     mainObject.getJSONObject("id").getString("id"),
-                    mainObject.getJSONObject("name").getString("name"),
-                    mainObject.getJSONObject("description").getString("description"),
-                    mainObject.getJSONObject("price").getString("price"),
-                    mainObject.getJSONObject("category").getString("category"),
-                    mainObject.getJSONObject("time_result").getString("time_result"),
-                    mainObject.getJSONObject("preparation").getString("preparation"),
-                    mainObject.getJSONObject("bio").getString("bio")
+                val gson = Gson()
+                val tests: List<Test> = gson.fromJson(text, Array<Test>::class.java).toList()
 
-                )*/
-               // Log.d("name","name: ${item.name}")
+                for (test in tests) {
+
+                    println("id: ${test.id}")
+                    println("Название: ${test.name}")
+                    println("Описание: ${test.description}")
+                    println("Цена: ${test.price}")
+                    println("Категория: ${test.category}")
+                    println("Время получения результата: ${test.timeResult}")
+                    println("Подготовка: ${test.preparation}")
+                    println("Биоматериал: ${test.bio}")
+                }
+
             } else {
                 // Обработка ошибки
                 println("Ошибка выполнения запроса: ${connection.responseCode}")
